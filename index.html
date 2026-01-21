@@ -562,8 +562,7 @@
         // Initialize pickers and state
         const feetValues = [3, 4, 5, 6, 7, 8];
         const inchValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-        const goalBmiValues = Array.from({ length: 21 }, (_, i) => 15 + i); // 15-35
-
+        const goalBmiValues = Array.from({ length: 36 }, (_, i) => 15 + i); // 15-50
         // Load saved values
         const savedFeet = parseInt(localStorage.getItem('bmi_feet')) || 5;
         const savedInches = parseInt(localStorage.getItem('bmi_inches')) || 9;
@@ -598,7 +597,7 @@
         const goalPicker = new ScrollPicker(
             document.getElementById('goalPicker'),
             document.getElementById('goalScroll'),
-            goalBmiValues,
+            ,
             savedGoalBmi,
             (value) => {
                 localStorage.setItem('bmi_goal', value);
