@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="BMI Calc">
+    <meta name="apple-mobile-web-app-title" content="BMI Calc 2">
     <meta name="theme-color" content="#000000">
     <title>BMI Calculator 2</title>
     <style>
@@ -14,16 +14,12 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         :root {
             --bg-primary: #000000;
             --bg-secondary: #1c1c1e;
             --bg-tertiary: #2c2c2e;
-            --bg-elevated: #3a3a3c;
             --text-primary: #ffffff;
             --text-secondary: #8e8e93;
             --accent-blue: #0a84ff;
@@ -38,7 +34,6 @@
 
         html, body {
             height: 100%;
-            overflow: hidden;
         }
 
         body {
@@ -54,7 +49,6 @@
             max-width: 428px;
             margin: 0 auto;
             padding: 20px 16px 40px;
-            min-height: 100%;
         }
 
         h1 {
@@ -62,7 +56,6 @@
             font-size: 34px;
             font-weight: 700;
             margin-bottom: 24px;
-            letter-spacing: -0.5px;
             background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-blue) 50%, var(--accent-purple) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -100,7 +93,6 @@
         .card-title {
             font-size: 13px;
             font-weight: 600;
-            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 16px;
@@ -109,24 +101,20 @@
             gap: 8px;
         }
 
-        .card-title .icon {
-            font-size: 16px;
-        }
-
         .card.height-card .card-title { color: var(--accent-blue); }
         .card.weight-card .card-title { color: var(--accent-orange); }
         .card.result-card .card-title { color: var(--accent-green); }
         .card.goal-card .card-title { color: var(--accent-purple); }
 
-        /* Scroll Picker Styles */
+        /* Picker Styles */
         .picker-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;
+            gap: 12px;
         }
 
-        .picker-group {
+        .picker-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -146,28 +134,6 @@
             overflow: hidden;
             background: var(--bg-tertiary);
             border-radius: 16px;
-            touch-action: none;
-        }
-
-        .scroll-picker::before,
-        .scroll-picker::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 55px;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .scroll-picker::before {
-            top: 0;
-            background: linear-gradient(to bottom, var(--bg-tertiary) 20%, transparent 100%);
-        }
-
-        .scroll-picker::after {
-            bottom: 0;
-            background: linear-gradient(to top, var(--bg-tertiary) 20%, transparent 100%);
         }
 
         .picker-highlight {
@@ -175,7 +141,7 @@
             top: 50%;
             left: 6px;
             right: 6px;
-            height: 44px;
+            height: 50px;
             transform: translateY(-50%);
             background: linear-gradient(135deg, rgba(10, 132, 255, 0.3) 0%, rgba(191, 90, 242, 0.3) 100%);
             border-radius: 10px;
@@ -184,29 +150,62 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .picker-scroll {
+        .picker-list {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            padding: 53px 0;
+            bottom: 0;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .picker-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        .picker-spacer {
+            height: 50px;
         }
 
         .picker-item {
-            height: 44px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
             font-weight: 500;
             color: var(--text-secondary);
-            transition: color 0.15s ease, transform 0.15s ease;
+            scroll-snap-align: center;
+            transition: color 0.2s, transform 0.2s;
         }
 
         .picker-item.selected {
             color: var(--text-primary);
             font-weight: 600;
-            transform: scale(1.05);
+        }
+
+        .picker-fade-top,
+        .picker-fade-bottom {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 50px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .picker-fade-top {
+            top: 0;
+            background: linear-gradient(to bottom, var(--bg-tertiary) 0%, transparent 100%);
+        }
+
+        .picker-fade-bottom {
+            bottom: 0;
+            background: linear-gradient(to top, var(--bg-tertiary) 0%, transparent 100%);
         }
 
         /* Weight Input */
@@ -229,7 +228,6 @@
             text-align: center;
             outline: none;
             -webkit-appearance: none;
-            transition: border-color 0.2s ease;
         }
 
         .weight-input:focus {
@@ -288,40 +286,6 @@
             color: var(--accent-red);
         }
 
-        /* Goal Section */
-        .goal-result {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .goal-stat {
-            text-align: center;
-        }
-
-        .goal-stat-value {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .goal-stat-value.lose {
-            color: var(--accent-green);
-        }
-
-        .goal-stat-value.gain {
-            color: var(--accent-orange);
-        }
-
-        .goal-stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
         /* BMI Scale */
         .bmi-scale {
             margin-top: 20px;
@@ -362,16 +326,14 @@
             justify-content: space-between;
             font-size: 11px;
             color: var(--text-secondary);
-            margin-top: 4px;
         }
 
-        /* Goal Picker */
+        /* Goal Section */
         .goal-picker-container {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 16px;
-            margin-top: 8px;
         }
 
         .goal-picker-label {
@@ -380,18 +342,35 @@
             font-weight: 500;
         }
 
-        .scroll-picker.goal-picker {
-            width: 90px;
-        }
-
         .goal-picker .picker-highlight {
             background: linear-gradient(135deg, rgba(191, 90, 242, 0.3) 0%, rgba(255, 55, 95, 0.3) 100%);
         }
 
-        .goal-picker-label-unit {
-            font-size: 15px;
-            color: var(--accent-purple);
-            font-weight: 500;
+        .goal-result {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .goal-stat {
+            text-align: center;
+        }
+
+        .goal-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .goal-stat-value.lose { color: var(--accent-green); }
+        .goal-stat-value.gain { color: var(--accent-orange); }
+
+        .goal-stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            text-transform: uppercase;
         }
     </style>
 </head>
@@ -401,19 +380,23 @@
 
         <!-- Height Input -->
         <div class="card height-card">
-            <div class="card-title"><span class="icon">📏</span> Height</div>
+            <div class="card-title">📏 Height</div>
             <div class="picker-container">
-                <div class="picker-group">
+                <div class="picker-wrapper">
                     <div class="scroll-picker" id="feetPicker">
+                        <div class="picker-fade-top"></div>
                         <div class="picker-highlight"></div>
-                        <div class="picker-scroll" id="feetScroll"></div>
+                        <div class="picker-list" id="feetList"></div>
+                        <div class="picker-fade-bottom"></div>
                     </div>
                     <span class="picker-label">feet</span>
                 </div>
-                <div class="picker-group">
+                <div class="picker-wrapper">
                     <div class="scroll-picker" id="inchesPicker">
+                        <div class="picker-fade-top"></div>
                         <div class="picker-highlight"></div>
-                        <div class="picker-scroll" id="inchesScroll"></div>
+                        <div class="picker-list" id="inchesList"></div>
+                        <div class="picker-fade-bottom"></div>
                     </div>
                     <span class="picker-label">inches</span>
                 </div>
@@ -422,7 +405,7 @@
 
         <!-- Weight Input -->
         <div class="card weight-card">
-            <div class="card-title"><span class="icon">⚖️</span> Weight</div>
+            <div class="card-title">⚖️ Weight</div>
             <div class="weight-input-container">
                 <input type="number" class="weight-input" id="weightInput"
                        inputmode="decimal" pattern="[0-9]*" min="50" max="500" step="0.1">
@@ -432,7 +415,7 @@
 
         <!-- BMI Result -->
         <div class="card result-card">
-            <div class="card-title"><span class="icon">📊</span> Your BMI</div>
+            <div class="card-title">📊 Your BMI</div>
             <div class="bmi-result">
                 <div class="bmi-value" id="bmiValue">--</div>
                 <div class="bmi-category" id="bmiCategory">Enter your details</div>
@@ -453,16 +436,18 @@
 
         <!-- Goal BMI -->
         <div class="card goal-card">
-            <div class="card-title"><span class="icon">🎯</span> Goal BMI</div>
+            <div class="card-title">🎯 Goal BMI</div>
             <div class="goal-picker-container">
                 <span class="goal-picker-label">Target:</span>
                 <div class="scroll-picker goal-picker" id="goalPicker">
+                    <div class="picker-fade-top"></div>
                     <div class="picker-highlight"></div>
-                    <div class="picker-scroll" id="goalScroll"></div>
+                    <div class="picker-list" id="goalList"></div>
+                    <div class="picker-fade-bottom"></div>
                 </div>
-                <span class="goal-picker-label-unit">BMI</span>
+                <span class="goal-picker-label" style="color: var(--accent-purple);">BMI</span>
             </div>
-            <div class="goal-result" id="goalResult">
+            <div class="goal-result">
                 <div class="goal-stat">
                     <div class="goal-stat-value" id="weightDiff">--</div>
                     <div class="goal-stat-label" id="weightDiffLabel">lbs to goal</div>
@@ -476,194 +461,118 @@
     </div>
 
     <script>
-        // Scroll Picker Class - Fixed for iOS touch handling
-        class ScrollPicker {
-            constructor(container, scrollEl, items, initialValue, onChange) {
-                this.container = container;
-                this.scrollEl = scrollEl;
-                this.items = items;
-                this.itemHeight = 44;
-                this.selectedIndex = items.indexOf(initialValue);
-                if (this.selectedIndex === -1) this.selectedIndex = 0;
+        // Simple Scroll Picker using native scroll-snap
+        class WheelPicker {
+            constructor(listEl, values, initialValue, onChange) {
+                this.listEl = listEl;
+                this.values = values;
                 this.onChange = onChange;
-                this.velocity = 0;
-                this.lastY = 0;
-                this.lastTime = 0;
-                this.isDragging = false;
-                this.currentOffset = 0;
-                this.momentumId = null;
-                this.startY = 0;
-                this.startOffset = 0;
+                this.itemHeight = 50;
+                this.selectedIndex = Math.max(0, values.indexOf(initialValue));
+                this.isScrolling = false;
+                this.scrollTimeout = null;
 
                 this.render();
                 this.bindEvents();
-                this.setIndex(this.selectedIndex, false);
-            }
 
-            render() {
-                this.scrollEl.innerHTML = this.items.map((item, index) =>
-                    `<div class="picker-item" data-index="${index}">${item}</div>`
-                ).join('');
-                this.itemEls = this.scrollEl.querySelectorAll('.picker-item');
-            }
-
-            bindEvents() {
-                // Touch events
-                this.container.addEventListener('touchstart', (e) => this.onStart(e), { passive: false });
-                this.container.addEventListener('touchmove', (e) => this.onMove(e), { passive: false });
-                this.container.addEventListener('touchend', (e) => this.onEnd(e), { passive: false });
-                this.container.addEventListener('touchcancel', (e) => this.onEnd(e), { passive: false });
-
-                // Mouse events
-                this.container.addEventListener('mousedown', (e) => this.onStart(e));
-                this.boundMouseMove = (e) => this.onMove(e);
-                this.boundMouseUp = (e) => this.onEnd(e);
-
-                // Mouse wheel support
-                this.container.addEventListener('wheel', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const delta = e.deltaY > 0 ? 1 : -1;
-                    const newIndex = Math.max(0, Math.min(this.items.length - 1, this.selectedIndex + delta));
-                    this.setIndex(newIndex, true);
-                }, { passive: false });
-            }
-
-            onStart(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                this.isDragging = true;
-                this.velocity = 0;
-                if (this.momentumId) {
-                    cancelAnimationFrame(this.momentumId);
-                    this.momentumId = null;
-                }
-
-                const point = e.touches ? e.touches[0] : e;
-                this.startY = point.clientY;
-                this.startOffset = this.currentOffset;
-                this.lastY = this.startY;
-                this.lastTime = Date.now();
-
-                this.scrollEl.style.transition = 'none';
-
-                if (!e.touches) {
-                    document.addEventListener('mousemove', this.boundMouseMove);
-                    document.addEventListener('mouseup', this.boundMouseUp);
-                }
-            }
-
-            onMove(e) {
-                if (!this.isDragging) return;
-                e.preventDefault();
-                e.stopPropagation();
-
-                const point = e.touches ? e.touches[0] : e;
-                const deltaY = point.clientY - this.startY;
-                const now = Date.now();
-                const dt = now - this.lastTime;
-
-                if (dt > 0) {
-                    this.velocity = (point.clientY - this.lastY) / dt;
-                }
-
-                this.lastY = point.clientY;
-                this.lastTime = now;
-
-                this.currentOffset = this.startOffset + deltaY;
-                this.updatePosition();
-            }
-
-            onEnd(e) {
-                if (!this.isDragging) return;
-
-                this.isDragging = false;
-
-                document.removeEventListener('mousemove', this.boundMouseMove);
-                document.removeEventListener('mouseup', this.boundMouseUp);
-
-                this.scrollEl.style.transition = 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)';
-
-                if (Math.abs(this.velocity) > 0.3) {
-                    this.applyMomentum();
-                } else {
-                    this.snapToNearest();
-                }
-            }
-
-            applyMomentum() {
-                const deceleration = 0.94;
-                const minVelocity = 0.01;
-
-                const animate = () => {
-                    if (Math.abs(this.velocity) < minVelocity || !this.momentumId) {
-                        this.snapToNearest();
-                        return;
-                    }
-
-                    this.currentOffset += this.velocity * 16;
-                    this.velocity *= deceleration;
-                    this.updatePosition();
-                    this.momentumId = requestAnimationFrame(animate);
-                };
-
-                this.momentumId = requestAnimationFrame(animate);
-            }
-
-            snapToNearest() {
-                if (this.momentumId) {
-                    cancelAnimationFrame(this.momentumId);
-                    this.momentumId = null;
-                }
-
-                const index = Math.round(-this.currentOffset / this.itemHeight);
-                const clampedIndex = Math.max(0, Math.min(this.items.length - 1, index));
-                this.setIndex(clampedIndex, true);
-            }
-
-            setIndex(index, animate = true) {
-                this.selectedIndex = index;
-                this.currentOffset = -index * this.itemHeight;
-
-                if (animate) {
-                    this.scrollEl.style.transition = 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)';
-                } else {
-                    this.scrollEl.style.transition = 'none';
-                }
-
-                this.updatePosition();
-                this.updateSelected();
-                this.onChange(this.items[index]);
-            }
-
-            updatePosition() {
-                this.scrollEl.style.transform = `translateY(${this.currentOffset}px)`;
-            }
-
-            updateSelected() {
-                this.itemEls.forEach((el, i) => {
-                    el.classList.toggle('selected', i === this.selectedIndex);
+                // Set initial position after render
+                requestAnimationFrame(() => {
+                    this.scrollToIndex(this.selectedIndex, false);
                 });
             }
 
+            render() {
+                // Add spacer at top
+                let html = '<div class="picker-spacer"></div>';
+
+                // Add items
+                this.values.forEach((value, index) => {
+                    html += `<div class="picker-item" data-index="${index}">${value}</div>`;
+                });
+
+                // Add spacer at bottom
+                html += '<div class="picker-spacer"></div>';
+
+                this.listEl.innerHTML = html;
+                this.items = this.listEl.querySelectorAll('.picker-item');
+            }
+
+            bindEvents() {
+                this.listEl.addEventListener('scroll', () => {
+                    clearTimeout(this.scrollTimeout);
+                    this.scrollTimeout = setTimeout(() => {
+                        this.onScrollEnd();
+                    }, 100);
+                    this.updateSelectedVisual();
+                }, { passive: true });
+
+                // Click to select
+                this.listEl.addEventListener('click', (e) => {
+                    const item = e.target.closest('.picker-item');
+                    if (item) {
+                        const index = parseInt(item.dataset.index);
+                        this.scrollToIndex(index, true);
+                    }
+                });
+            }
+
+            onScrollEnd() {
+                const scrollTop = this.listEl.scrollTop;
+                const index = Math.round(scrollTop / this.itemHeight);
+                const clampedIndex = Math.max(0, Math.min(this.values.length - 1, index));
+
+                if (clampedIndex !== this.selectedIndex) {
+                    this.selectedIndex = clampedIndex;
+                    this.onChange(this.values[this.selectedIndex]);
+                }
+
+                // Snap to exact position
+                this.scrollToIndex(clampedIndex, true);
+            }
+
+            updateSelectedVisual() {
+                const scrollTop = this.listEl.scrollTop;
+                const centerIndex = Math.round(scrollTop / this.itemHeight);
+
+                this.items.forEach((item, i) => {
+                    item.classList.toggle('selected', i === centerIndex);
+                });
+            }
+
+            scrollToIndex(index, smooth = true) {
+                const targetScroll = index * this.itemHeight;
+                this.listEl.scrollTo({
+                    top: targetScroll,
+                    behavior: smooth ? 'smooth' : 'auto'
+                });
+                this.selectedIndex = index;
+                this.updateSelectedVisual();
+            }
+
             getValue() {
-                return this.items[this.selectedIndex];
+                return this.values[this.selectedIndex];
+            }
+
+            setValue(value) {
+                const index = this.values.indexOf(value);
+                if (index !== -1) {
+                    this.scrollToIndex(index, false);
+                }
             }
         }
 
-        // Initialize pickers and state
-        const feetValues = [4, 5, 6, 7];  // 4-7 feet
+        // Initialize data
+        const feetValues = [4, 5, 6, 7];
         const inchValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-        const goalBmiValues = Array.from({ length: 21 }, (_, i) => 35 + i); // 35-55
+        const goalBmiValues = [];
+        for (let i = 35; i <= 55; i++) goalBmiValues.push(i);
 
-        // Load saved values
+        // Load saved values with validation
         let savedFeet = parseInt(localStorage.getItem('bmi_feet')) || 5;
         let savedInches = parseInt(localStorage.getItem('bmi_inches')) || 9;
-        const savedWeight = parseFloat(localStorage.getItem('bmi_weight')) || 150;
+        let savedWeight = parseFloat(localStorage.getItem('bmi_weight')) || 150;
         let savedGoalBmi = parseInt(localStorage.getItem('bmi_goal')) || 40;
 
-        // Validate saved values are in range
         if (!feetValues.includes(savedFeet)) savedFeet = 5;
         if (!inchValues.includes(savedInches)) savedInches = 9;
         if (!goalBmiValues.includes(savedGoalBmi)) savedGoalBmi = 40;
@@ -671,9 +580,8 @@
         document.getElementById('weightInput').value = savedWeight;
 
         // Create pickers
-        const feetPicker = new ScrollPicker(
-            document.getElementById('feetPicker'),
-            document.getElementById('feetScroll'),
+        const feetPicker = new WheelPicker(
+            document.getElementById('feetList'),
             feetValues,
             savedFeet,
             (value) => {
@@ -682,9 +590,8 @@
             }
         );
 
-        const inchesPicker = new ScrollPicker(
-            document.getElementById('inchesPicker'),
-            document.getElementById('inchesScroll'),
+        const inchesPicker = new WheelPicker(
+            document.getElementById('inchesList'),
             inchValues,
             savedInches,
             (value) => {
@@ -693,9 +600,8 @@
             }
         );
 
-        const goalPicker = new ScrollPicker(
-            document.getElementById('goalPicker'),
-            document.getElementById('goalScroll'),
+        const goalPicker = new WheelPicker(
+            document.getElementById('goalList'),
             goalBmiValues,
             savedGoalBmi,
             (value) => {
@@ -704,16 +610,12 @@
             }
         );
 
-        // Weight input handler
+        // Weight input
         const weightInput = document.getElementById('weightInput');
         weightInput.addEventListener('input', () => {
             localStorage.setItem('bmi_weight', weightInput.value);
             calculateBMI();
         });
-
-        // Allow text selection only for weight input
-        weightInput.style.webkitUserSelect = 'text';
-        weightInput.style.userSelect = 'text';
 
         // BMI Calculation
         function calculateBMI() {
@@ -729,16 +631,13 @@
                 return;
             }
 
-            // Calculate height in inches and BMI
             const totalInches = (feet * 12) + inches;
             const heightMeters = totalInches * 0.0254;
             const weightKg = weight * 0.453592;
             const bmi = weightKg / (heightMeters * heightMeters);
 
-            // Display BMI
             document.getElementById('bmiValue').textContent = bmi.toFixed(1);
 
-            // Category
             const categoryEl = document.getElementById('bmiCategory');
             let category, categoryClass;
 
@@ -759,11 +658,9 @@
             categoryEl.textContent = category;
             categoryEl.className = `bmi-category ${categoryClass}`;
 
-            // Update scale marker (16-40 range)
             const markerPosition = Math.max(0, Math.min(100, ((bmi - 16) / 24) * 100));
             document.getElementById('scaleMarker').style.left = `${markerPosition}%`;
 
-            // Goal calculations
             const targetWeight = (goalBmi * heightMeters * heightMeters) / 0.453592;
             const weightDiff = weight - targetWeight;
 
@@ -788,17 +685,7 @@
         }
 
         // Initial calculation
-        calculateBMI();
-
-        // Prevent zoom on double tap
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', (e) => {
-            const now = Date.now();
-            if (now - lastTouchEnd < 300) {
-                e.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, { passive: false });
+        setTimeout(calculateBMI, 100);
     </script>
 </body>
 </html>
