@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BMI Calc">
-    <meta name="theme-color" content="#1a1a1e">
+    <meta name="theme-color" content="#000000">
     <title>BMI Calculator</title>
     <style>
         * {
@@ -14,19 +14,26 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         :root {
-            --bg-primary: #1a1a1e;
-            --bg-secondary: #2c2c30;
-            --bg-tertiary: #3a3a3e;
+            --bg-primary: #000000;
+            --bg-secondary: #1c1c1e;
+            --bg-tertiary: #2c2c2e;
+            --bg-elevated: #3a3a3c;
             --text-primary: #ffffff;
             --text-secondary: #8e8e93;
-            --accent: #0a84ff;
-            --green: #30d158;
-            --orange: #ff9f0a;
-            --red: #ff453a;
-            --yellow: #ffd60a;
+            --accent-blue: #0a84ff;
+            --accent-purple: #bf5af2;
+            --accent-pink: #ff375f;
+            --accent-orange: #ff9f0a;
+            --accent-yellow: #ffd60a;
+            --accent-green: #30d158;
+            --accent-teal: #64d2ff;
+            --accent-red: #ff453a;
         }
 
         html, body {
@@ -52,17 +59,42 @@
 
         h1 {
             text-align: center;
-            font-size: 28px;
+            font-size: 34px;
             font-weight: 700;
             margin-bottom: 24px;
             letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-blue) 50%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .card {
             background: var(--bg-secondary);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 20px;
             margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card.height-card {
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.15) 0%, rgba(191, 90, 242, 0.15) 100%);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+        }
+
+        .card.weight-card {
+            background: linear-gradient(135deg, rgba(255, 159, 10, 0.15) 0%, rgba(255, 55, 95, 0.15) 100%);
+            border: 1px solid rgba(255, 159, 10, 0.3);
+        }
+
+        .card.result-card {
+            background: linear-gradient(135deg, rgba(48, 209, 88, 0.1) 0%, rgba(100, 210, 255, 0.1) 100%);
+            border: 1px solid rgba(48, 209, 88, 0.3);
+        }
+
+        .card.goal-card {
+            background: linear-gradient(135deg, rgba(191, 90, 242, 0.15) 0%, rgba(255, 55, 95, 0.15) 100%);
+            border: 1px solid rgba(191, 90, 242, 0.3);
         }
 
         .card-title {
@@ -70,16 +102,28 @@
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .card-title .icon {
+            font-size: 16px;
+        }
+
+        .card.height-card .card-title { color: var(--accent-blue); }
+        .card.weight-card .card-title { color: var(--accent-orange); }
+        .card.result-card .card-title { color: var(--accent-green); }
+        .card.goal-card .card-title { color: var(--accent-purple); }
 
         /* Scroll Picker Styles */
         .picker-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 16px;
         }
 
         .picker-group {
@@ -89,18 +133,20 @@
         }
 
         .picker-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
+            font-size: 13px;
+            color: var(--accent-blue);
+            margin-top: 8px;
+            font-weight: 500;
         }
 
         .scroll-picker {
             position: relative;
             height: 150px;
-            width: 70px;
+            width: 80px;
             overflow: hidden;
             background: var(--bg-tertiary);
-            border-radius: 12px;
+            border-radius: 16px;
+            touch-action: none;
         }
 
         .scroll-picker::before,
@@ -116,25 +162,26 @@
 
         .scroll-picker::before {
             top: 0;
-            background: linear-gradient(to bottom, var(--bg-tertiary) 0%, transparent 100%);
+            background: linear-gradient(to bottom, var(--bg-tertiary) 20%, transparent 100%);
         }
 
         .scroll-picker::after {
             bottom: 0;
-            background: linear-gradient(to top, var(--bg-tertiary) 0%, transparent 100%);
+            background: linear-gradient(to top, var(--bg-tertiary) 20%, transparent 100%);
         }
 
         .picker-highlight {
             position: absolute;
             top: 50%;
-            left: 4px;
-            right: 4px;
-            height: 40px;
+            left: 6px;
+            right: 6px;
+            height: 44px;
             transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.3) 0%, rgba(191, 90, 242, 0.3) 100%);
+            border-radius: 10px;
             pointer-events: none;
             z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .picker-scroll {
@@ -142,25 +189,24 @@
             top: 0;
             left: 0;
             right: 0;
-            padding: 55px 0;
-            transition: transform 0.1s ease-out;
+            padding: 53px 0;
         }
 
         .picker-item {
-            height: 40px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 500;
             color: var(--text-secondary);
-            transition: all 0.15s ease;
+            transition: color 0.15s ease, transform 0.15s ease;
         }
 
         .picker-item.selected {
             color: var(--text-primary);
             font-weight: 600;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
         /* Weight Input */
@@ -172,68 +218,74 @@
         }
 
         .weight-input {
-            width: 120px;
-            height: 56px;
+            width: 140px;
+            height: 60px;
             background: var(--bg-tertiary);
-            border: none;
-            border-radius: 12px;
+            border: 2px solid transparent;
+            border-radius: 16px;
             color: var(--text-primary);
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 600;
             text-align: center;
             outline: none;
             -webkit-appearance: none;
+            transition: border-color 0.2s ease;
         }
 
         .weight-input:focus {
-            box-shadow: 0 0 0 2px var(--accent);
+            border-color: var(--accent-orange);
         }
 
         .weight-unit {
-            font-size: 18px;
-            color: var(--text-secondary);
+            font-size: 20px;
+            color: var(--accent-orange);
+            font-weight: 600;
         }
 
         /* BMI Result */
         .bmi-result {
             text-align: center;
-            padding: 24px 0;
+            padding: 20px 0;
         }
 
         .bmi-value {
-            font-size: 64px;
+            font-size: 72px;
             font-weight: 700;
-            letter-spacing: -2px;
+            letter-spacing: -3px;
             line-height: 1;
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .bmi-category {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            margin-top: 8px;
-            padding: 6px 16px;
-            border-radius: 20px;
+            margin-top: 12px;
+            padding: 8px 20px;
+            border-radius: 25px;
             display: inline-block;
         }
 
         .bmi-category.underweight {
-            background: rgba(255, 214, 10, 0.2);
-            color: var(--yellow);
+            background: linear-gradient(135deg, rgba(255, 214, 10, 0.25) 0%, rgba(255, 159, 10, 0.25) 100%);
+            color: var(--accent-yellow);
         }
 
         .bmi-category.normal {
-            background: rgba(48, 209, 88, 0.2);
-            color: var(--green);
+            background: linear-gradient(135deg, rgba(48, 209, 88, 0.25) 0%, rgba(100, 210, 255, 0.25) 100%);
+            color: var(--accent-green);
         }
 
         .bmi-category.overweight {
-            background: rgba(255, 159, 10, 0.2);
-            color: var(--orange);
+            background: linear-gradient(135deg, rgba(255, 159, 10, 0.25) 0%, rgba(255, 55, 95, 0.25) 100%);
+            color: var(--accent-orange);
         }
 
         .bmi-category.obese {
-            background: rgba(255, 69, 58, 0.2);
-            color: var(--red);
+            background: linear-gradient(135deg, rgba(255, 69, 58, 0.25) 0%, rgba(255, 55, 95, 0.25) 100%);
+            color: var(--accent-red);
         }
 
         /* Goal Section */
@@ -242,7 +294,7 @@
             justify-content: space-around;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid var(--bg-tertiary);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .goal-stat {
@@ -255,57 +307,62 @@
         }
 
         .goal-stat-value.lose {
-            color: var(--green);
+            color: var(--accent-green);
         }
 
         .goal-stat-value.gain {
-            color: var(--orange);
+            color: var(--accent-orange);
         }
 
         .goal-stat-label {
             font-size: 12px;
             color: var(--text-secondary);
             margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* BMI Scale */
         .bmi-scale {
-            margin-top: 16px;
+            margin-top: 20px;
             padding: 16px;
             background: var(--bg-tertiary);
-            border-radius: 12px;
+            border-radius: 16px;
         }
 
         .scale-bar {
-            height: 8px;
-            border-radius: 4px;
+            height: 10px;
+            border-radius: 5px;
             background: linear-gradient(to right,
-                var(--yellow) 0%,
-                var(--green) 25%,
-                var(--orange) 60%,
-                var(--red) 100%
+                var(--accent-yellow) 0%,
+                var(--accent-green) 20%,
+                var(--accent-green) 35%,
+                var(--accent-orange) 55%,
+                var(--accent-red) 100%
             );
             position: relative;
-            margin: 8px 0;
+            margin: 10px 0;
         }
 
         .scale-marker {
             position: absolute;
-            top: -6px;
-            width: 20px;
-            height: 20px;
+            top: -7px;
+            width: 24px;
+            height: 24px;
             background: white;
             border-radius: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
             transition: left 0.3s ease;
+            border: 3px solid var(--bg-tertiary);
         }
 
         .scale-labels {
             display: flex;
             justify-content: space-between;
-            font-size: 10px;
+            font-size: 11px;
             color: var(--text-secondary);
+            margin-top: 4px;
         }
 
         /* Goal Picker */
@@ -313,17 +370,28 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            margin-top: 12px;
+            gap: 16px;
+            margin-top: 8px;
         }
 
         .goal-picker-label {
-            font-size: 16px;
-            color: var(--text-secondary);
+            font-size: 17px;
+            color: var(--text-primary);
+            font-weight: 500;
         }
 
         .scroll-picker.goal-picker {
-            width: 80px;
+            width: 90px;
+        }
+
+        .goal-picker .picker-highlight {
+            background: linear-gradient(135deg, rgba(191, 90, 242, 0.3) 0%, rgba(255, 55, 95, 0.3) 100%);
+        }
+
+        .goal-picker-label-unit {
+            font-size: 15px;
+            color: var(--accent-purple);
+            font-weight: 500;
         }
     </style>
 </head>
@@ -332,8 +400,8 @@
         <h1>BMI Calculator</h1>
 
         <!-- Height Input -->
-        <div class="card">
-            <div class="card-title">Height</div>
+        <div class="card height-card">
+            <div class="card-title"><span class="icon">📏</span> Height</div>
             <div class="picker-container">
                 <div class="picker-group">
                     <div class="scroll-picker" id="feetPicker">
@@ -353,8 +421,8 @@
         </div>
 
         <!-- Weight Input -->
-        <div class="card">
-            <div class="card-title">Weight</div>
+        <div class="card weight-card">
+            <div class="card-title"><span class="icon">⚖️</span> Weight</div>
             <div class="weight-input-container">
                 <input type="number" class="weight-input" id="weightInput"
                        inputmode="decimal" pattern="[0-9]*" min="50" max="500" step="0.1">
@@ -363,8 +431,8 @@
         </div>
 
         <!-- BMI Result -->
-        <div class="card">
-            <div class="card-title">Your BMI</div>
+        <div class="card result-card">
+            <div class="card-title"><span class="icon">📊</span> Your BMI</div>
             <div class="bmi-result">
                 <div class="bmi-value" id="bmiValue">--</div>
                 <div class="bmi-category" id="bmiCategory">Enter your details</div>
@@ -384,14 +452,15 @@
         </div>
 
         <!-- Goal BMI -->
-        <div class="card">
-            <div class="card-title">Goal BMI</div>
+        <div class="card goal-card">
+            <div class="card-title"><span class="icon">🎯</span> Goal BMI</div>
             <div class="goal-picker-container">
-                <span class="goal-picker-label">Target BMI:</span>
+                <span class="goal-picker-label">Target:</span>
                 <div class="scroll-picker goal-picker" id="goalPicker">
                     <div class="picker-highlight"></div>
                     <div class="picker-scroll" id="goalScroll"></div>
                 </div>
+                <span class="goal-picker-label-unit">BMI</span>
             </div>
             <div class="goal-result" id="goalResult">
                 <div class="goal-stat">
@@ -407,13 +476,13 @@
     </div>
 
     <script>
-        // Scroll Picker Class
+        // Scroll Picker Class - Fixed for iOS touch handling
         class ScrollPicker {
             constructor(container, scrollEl, items, initialValue, onChange) {
                 this.container = container;
                 this.scrollEl = scrollEl;
                 this.items = items;
-                this.itemHeight = 40;
+                this.itemHeight = 44;
                 this.selectedIndex = items.indexOf(initialValue);
                 if (this.selectedIndex === -1) this.selectedIndex = 0;
                 this.onChange = onChange;
@@ -423,6 +492,8 @@
                 this.isDragging = false;
                 this.currentOffset = 0;
                 this.momentumId = null;
+                this.startY = 0;
+                this.startOffset = 0;
 
                 this.render();
                 this.bindEvents();
@@ -437,79 +508,96 @@
             }
 
             bindEvents() {
-                let startY = 0;
-                let startOffset = 0;
+                // Touch events
+                this.container.addEventListener('touchstart', (e) => this.onStart(e), { passive: false });
+                this.container.addEventListener('touchmove', (e) => this.onMove(e), { passive: false });
+                this.container.addEventListener('touchend', (e) => this.onEnd(e), { passive: false });
+                this.container.addEventListener('touchcancel', (e) => this.onEnd(e), { passive: false });
 
-                const onStart = (e) => {
-                    this.isDragging = true;
-                    this.velocity = 0;
-                    if (this.momentumId) cancelAnimationFrame(this.momentumId);
-
-                    const touch = e.touches ? e.touches[0] : e;
-                    startY = touch.clientY;
-                    startOffset = this.currentOffset;
-                    this.lastY = startY;
-                    this.lastTime = Date.now();
-
-                    this.scrollEl.style.transition = 'none';
-                };
-
-                const onMove = (e) => {
-                    if (!this.isDragging) return;
-                    e.preventDefault();
-
-                    const touch = e.touches ? e.touches[0] : e;
-                    const deltaY = touch.clientY - startY;
-                    const now = Date.now();
-                    const dt = now - this.lastTime;
-
-                    if (dt > 0) {
-                        this.velocity = (touch.clientY - this.lastY) / dt;
-                    }
-
-                    this.lastY = touch.clientY;
-                    this.lastTime = now;
-
-                    this.currentOffset = startOffset + deltaY;
-                    this.updatePosition();
-                };
-
-                const onEnd = () => {
-                    if (!this.isDragging) return;
-                    this.isDragging = false;
-
-                    this.scrollEl.style.transition = 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)';
-
-                    if (Math.abs(this.velocity) > 0.5) {
-                        this.applyMomentum();
-                    } else {
-                        this.snapToNearest();
-                    }
-                };
-
-                this.container.addEventListener('touchstart', onStart, { passive: true });
-                this.container.addEventListener('touchmove', onMove, { passive: false });
-                this.container.addEventListener('touchend', onEnd);
-
-                this.container.addEventListener('mousedown', onStart);
-                window.addEventListener('mousemove', onMove);
-                window.addEventListener('mouseup', onEnd);
+                // Mouse events
+                this.container.addEventListener('mousedown', (e) => this.onStart(e));
+                this.boundMouseMove = (e) => this.onMove(e);
+                this.boundMouseUp = (e) => this.onEnd(e);
 
                 // Mouse wheel support
                 this.container.addEventListener('wheel', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     const delta = e.deltaY > 0 ? 1 : -1;
                     const newIndex = Math.max(0, Math.min(this.items.length - 1, this.selectedIndex + delta));
                     this.setIndex(newIndex, true);
                 }, { passive: false });
             }
 
+            onStart(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                this.isDragging = true;
+                this.velocity = 0;
+                if (this.momentumId) {
+                    cancelAnimationFrame(this.momentumId);
+                    this.momentumId = null;
+                }
+
+                const point = e.touches ? e.touches[0] : e;
+                this.startY = point.clientY;
+                this.startOffset = this.currentOffset;
+                this.lastY = this.startY;
+                this.lastTime = Date.now();
+
+                this.scrollEl.style.transition = 'none';
+
+                if (!e.touches) {
+                    document.addEventListener('mousemove', this.boundMouseMove);
+                    document.addEventListener('mouseup', this.boundMouseUp);
+                }
+            }
+
+            onMove(e) {
+                if (!this.isDragging) return;
+                e.preventDefault();
+                e.stopPropagation();
+
+                const point = e.touches ? e.touches[0] : e;
+                const deltaY = point.clientY - this.startY;
+                const now = Date.now();
+                const dt = now - this.lastTime;
+
+                if (dt > 0) {
+                    this.velocity = (point.clientY - this.lastY) / dt;
+                }
+
+                this.lastY = point.clientY;
+                this.lastTime = now;
+
+                this.currentOffset = this.startOffset + deltaY;
+                this.updatePosition();
+            }
+
+            onEnd(e) {
+                if (!this.isDragging) return;
+
+                this.isDragging = false;
+
+                document.removeEventListener('mousemove', this.boundMouseMove);
+                document.removeEventListener('mouseup', this.boundMouseUp);
+
+                this.scrollEl.style.transition = 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)';
+
+                if (Math.abs(this.velocity) > 0.3) {
+                    this.applyMomentum();
+                } else {
+                    this.snapToNearest();
+                }
+            }
+
             applyMomentum() {
-                const deceleration = 0.95;
+                const deceleration = 0.94;
                 const minVelocity = 0.01;
 
                 const animate = () => {
-                    if (Math.abs(this.velocity) < minVelocity) {
+                    if (Math.abs(this.velocity) < minVelocity || !this.momentumId) {
                         this.snapToNearest();
                         return;
                     }
@@ -520,10 +608,15 @@
                     this.momentumId = requestAnimationFrame(animate);
                 };
 
-                animate();
+                this.momentumId = requestAnimationFrame(animate);
             }
 
             snapToNearest() {
+                if (this.momentumId) {
+                    cancelAnimationFrame(this.momentumId);
+                    this.momentumId = null;
+                }
+
                 const index = Math.round(-this.currentOffset / this.itemHeight);
                 const clampedIndex = Math.max(0, Math.min(this.items.length - 1, index));
                 this.setIndex(clampedIndex, true);
@@ -560,15 +653,20 @@
         }
 
         // Initialize pickers and state
-        const feetValues = [3, 4, 5, 6, 7, 8];
+        const feetValues = [4, 5, 6, 7];  // 4-7 feet
         const inchValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-        const goalBmiValues = Array.from({ length: 21 }, (_, i) => 15 + i); // 15-35
+        const goalBmiValues = Array.from({ length: 21 }, (_, i) => 35 + i); // 35-55
 
         // Load saved values
-        const savedFeet = parseInt(localStorage.getItem('bmi_feet')) || 5;
-        const savedInches = parseInt(localStorage.getItem('bmi_inches')) || 9;
+        let savedFeet = parseInt(localStorage.getItem('bmi_feet')) || 5;
+        let savedInches = parseInt(localStorage.getItem('bmi_inches')) || 9;
         const savedWeight = parseFloat(localStorage.getItem('bmi_weight')) || 150;
-        const savedGoalBmi = parseInt(localStorage.getItem('bmi_goal')) || 22;
+        let savedGoalBmi = parseInt(localStorage.getItem('bmi_goal')) || 40;
+
+        // Validate saved values are in range
+        if (!feetValues.includes(savedFeet)) savedFeet = 5;
+        if (!inchValues.includes(savedInches)) savedInches = 9;
+        if (!goalBmiValues.includes(savedGoalBmi)) savedGoalBmi = 40;
 
         document.getElementById('weightInput').value = savedWeight;
 
@@ -612,6 +710,10 @@
             localStorage.setItem('bmi_weight', weightInput.value);
             calculateBMI();
         });
+
+        // Allow text selection only for weight input
+        weightInput.style.webkitUserSelect = 'text';
+        weightInput.style.userSelect = 'text';
 
         // BMI Calculation
         function calculateBMI() {
@@ -689,13 +791,14 @@
         calculateBMI();
 
         // Prevent zoom on double tap
+        let lastTouchEnd = 0;
         document.addEventListener('touchend', (e) => {
             const now = Date.now();
-            if (now - (document.lastTouchEnd || 0) < 300) {
+            if (now - lastTouchEnd < 300) {
                 e.preventDefault();
             }
-            document.lastTouchEnd = now;
-        }, false);
+            lastTouchEnd = now;
+        }, { passive: false });
     </script>
 </body>
 </html>
